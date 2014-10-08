@@ -1,7 +1,7 @@
 /**
  * Editor.js
  *
- * Copyright, Moxiecode Systems AB
+ * Copyright, Moxiecode Systems AB// Load scripts
  * Released under LGPL License.
  *
  * License: http://www.tinymce.com/license
@@ -395,10 +395,21 @@ define("tinymce/Editor", [
 
 			// Load scripts
 			function loadScripts() {
-				var scriptLoader = ScriptLoader.ScriptLoader;
+				var scriptLoader = ScriptLoader.ScriptLoader, 
+					cacheBuster = '', 
+					language = settings.language,
+					languageCache = '?_l='+language;
+				
+				if(settings.cacheBuster){
+					cacheBuster = settings.cacheBuster;
+					if(cacheBuster.indexOf('?') != 0){
+						cacheBuster = '?_v='+cacheBuster;	
+					}
+					languageCache = '&_l='+language;
+				}
 
-				if (settings.language && settings.language != 'en' && !settings.language_url) {
-					settings.language_url = self.editorManager.baseURL + '/langs/' + settings.language + '.js';
+				if (language && language != 'en' && !settings.language_url) {
+					settings.language_url = self.editorManager.baseURL + '/langs/' + language + '.js' + cacheBuster + languageCache;
 				}
 
 				if (settings.language_url) {
@@ -412,7 +423,7 @@ define("tinymce/Editor", [
 					if (themeUrl) {
 						themeUrl = self.documentBaseURI.toAbsolute(themeUrl);
 					} else {
-						themeUrl = 'themes/' + settings.theme + '/theme' + suffix + '.js';
+						themeUrl = 'themes/' + settings.theme + '/theme' + suffix + '.js' + cacheBuster;
 					}
 
 					ThemeManager.load(settings.theme, themeUrl);
@@ -440,7 +451,7 @@ define("tinymce/Editor", [
 								var defaultSettings = {
 									prefix: 'plugins/',
 									resource: dep,
-									suffix: '/plugin' + suffix + '.js'
+									suffix: '/plugin' + suffix + '.js' + cacheBuster
 								};
 
 								dep = PluginManager.createUrl(defaultSettings, dep);
@@ -450,7 +461,7 @@ define("tinymce/Editor", [
 							PluginManager.load(plugin, {
 								prefix: 'plugins/',
 								resource: plugin,
-								suffix: '/plugin' + suffix + '.js'
+								suffix: '/plugin' + suffix + '.js' + cacheBuster
 							});
 						}
 					}
